@@ -54,4 +54,6 @@ resource "aws_db_instance" "tfe" {
   tags = {
     Name = var.rds_instance_name
   }
+
+  depends_on = [aws_cloudwatch_log_group.tfe_rds_postgresql]
 }
