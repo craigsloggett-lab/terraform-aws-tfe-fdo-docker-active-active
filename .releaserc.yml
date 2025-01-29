@@ -3,12 +3,10 @@ plugins:
   - - '@semantic-release/commit-analyzer'
     - preset: conventionalCommits
       releaseRules:
+        - type: chore
+          release: patch
         - type: docs
           release: patch
-        - type: ci
-          release: patch
-        - type: major
-          release: major
   - - '@semantic-release/release-notes-generator'
     - preset: conventionalCommits
       presetConfig:
