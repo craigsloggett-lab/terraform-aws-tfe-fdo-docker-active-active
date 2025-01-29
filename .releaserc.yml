@@ -13,8 +13,10 @@ plugins:
         types:
           - type: docs
             section: Documentation
+          - type: chore
+            release: Chores
           - type: ci
-            section: CI
+            section: CI Changes
           - type: fix
             section: Bug Fixes
           - type: feat
