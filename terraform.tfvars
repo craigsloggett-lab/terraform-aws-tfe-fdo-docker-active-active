@@ -1,6 +1,7 @@
 # Required
 
-tfe_license                = ""
+# Note: Sensitive variables are not included here
+
 route53_zone_name          = "craig-sloggett.sbx.hashidemos.io"
 ec2_bastion_ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDEYtDnLmY9nus0dhQm1GlIVSQB7BswxGYnugA8Ag9JA"
 
