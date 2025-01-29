@@ -22,7 +22,7 @@ variable "ec2_bastion_ssh_public_key" {
 variable "tfe_version" {
   type        = string
   description = "The version of Terraform Enterprise to deploy."
-  default     = "v202409-2"
+  default     = "v202501-1"
 }
 
 # VPC
@@ -142,7 +142,7 @@ variable "lb_target_group_name" {
 variable "postgresql_version" {
   type        = string
   description = "The version of the PostgreSQL engine to deploy."
-  default     = "16.4"
+  default     = "17.2"
 }
 
 variable "tfe_database_name" {
