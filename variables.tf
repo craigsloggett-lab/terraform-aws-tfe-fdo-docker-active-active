@@ -10,9 +10,9 @@ variable "route53_zone_name" {
   description = "The name of the Route53 zone used to host Terraform Enterprise."
 }
 
-variable "ec2_bastion_ssh_public_key" {
+variable "ec2_instance_connect_ssh_public_key" {
   type        = string
-  description = "The SSH public key used to authenticate to the Bastion EC2 instance."
+  description = "The SSH public key used to authenticate to the EC2 instances over instance connect."
 }
 
 # Optional
@@ -39,16 +39,22 @@ variable "vpc_azs" {
   default     = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
 }
 
+variable "ec2_instance_connect_endpoint_name" {
+  type        = string
+  description = "The name of the S3 VPC endpoint."
+  default     = "tfe-vpce-s3"
+}
+
 variable "s3_vpc_endpoint_name" {
   type        = string
   description = "The name of the S3 VPC endpoint."
   default     = "tfe-vpce-s3"
 }
 
-variable "ec2_bastion_security_group_name" {
+variable "ec2_instance_connect_security_group_name" {
   type        = string
-  description = "The name of the EC2 Bastion Host security group."
-  default     = "ec2-bastion-sg"
+  description = "The name of the EC2 Instance Connect security group."
+  default     = "ec2-instance-connect-sg"
 }
 
 variable "tfe_security_group_name" {
@@ -76,18 +82,6 @@ variable "elasticache_security_group_name" {
 }
 
 # EC2
-
-variable "ec2_bastion_instance_name" {
-  type        = string
-  description = "The name of the Bastion EC2 instance."
-  default     = "Bastion Host"
-}
-
-variable "ec2_bastion_instance_type" {
-  type        = string
-  description = "The type (size) of the Bastion EC2 instance."
-  default     = "t3.nano"
-}
 
 variable "ec2_tfe_instance_name" {
   type        = string

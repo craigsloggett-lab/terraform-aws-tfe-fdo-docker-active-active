@@ -1,42 +1,14 @@
 resource "aws_key_pair" "self" {
   key_name   = "tfe-public-key"
-  public_key = var.ec2_bastion_ssh_public_key
-}
-
-# Bastion Host
-
-resource "aws_instance" "bastion" {
-  ami                         = data.aws_ami.debian.id
-  instance_type               = var.ec2_bastion_instance_type
-  subnet_id                   = module.vpc.public_subnets[0]
-  vpc_security_group_ids      = [aws_security_group.bastion.id]
-  associate_public_ip_address = true
-  ebs_optimized               = true
-  monitoring                  = true
-
-  key_name                    = aws_key_pair.self.key_name
-  user_data                   = file("${path.module}/cloud-init/bastion")
-  user_data_replace_on_change = true
-  iam_instance_profile        = aws_iam_instance_profile.tfe.name
-
-  root_block_device {
-    volume_type = "gp3"
-    volume_size = 50
-    throughput  = 125
-    iops        = 3000
-    encrypted   = true
-  }
-
-  metadata_options {
-    http_tokens = "required"
-  }
-
-  tags = {
-    Name = var.ec2_bastion_instance_name
-  }
+  public_key = var.ec2_instance_connect_ssh_public_key
 }
 
 # TFE Hosts
+
+resource "aws_ec2_instance_connect_endpoint" "tfe" {
+  subnet_id          = module.vpc.private_subnets[0]
+  security_group_ids = [aws_security_group.ec2_instance_connect.id]
+}
 
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
