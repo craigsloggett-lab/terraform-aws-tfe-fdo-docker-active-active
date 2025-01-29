@@ -1,0 +1,27 @@
+branches: main
+plugins:
+  - - '@semantic-release/commit-analyzer'
+    - preset: conventionalCommits
+      releaseRules:
+        - type: docs
+          release: patch
+        - type: ci
+          release: patch
+        - type: major
+          release: major
+  - - '@semantic-release/release-notes-generator'
+    - preset: conventionalCommits
+      presetConfig:
+        types:
+          - type: docs
+            section: Documentation
+          - type: ci
+            section: CI
+          - type: fix
+            section: Bug Fixes
+          - type: feat
+            section: Features
+          - type: major
+            section: Breaking Changes
+  - '@semantic-release/git'
+  - '@semantic-release/github'
