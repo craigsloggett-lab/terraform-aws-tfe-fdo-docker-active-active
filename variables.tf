@@ -41,8 +41,8 @@ variable "vpc_azs" {
 
 variable "ec2_instance_connect_endpoint_name" {
   type        = string
-  description = "The name of the S3 VPC endpoint."
-  default     = "tfe-vpce-s3"
+  description = "The name of the EC2 Instance Connect endpoint."
+  default     = "tfe-vpce-ec2"
 }
 
 variable "s3_vpc_endpoint_name" {

@@ -5,11 +5,6 @@ resource "aws_key_pair" "self" {
 
 # TFE Hosts
 
-resource "aws_ec2_instance_connect_endpoint" "tfe" {
-  subnet_id          = module.vpc.private_subnets[0]
-  security_group_ids = [aws_security_group.ec2_instance_connect.id]
-}
-
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id
