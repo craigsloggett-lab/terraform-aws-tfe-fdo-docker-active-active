@@ -20,36 +20,35 @@ jobs:
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
         run: |
-          CREATE_URL="https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces"
-          PAYLOAD="$(jq -n \
-            --arg name "${GITHUB_REPOSITORY#*/}-${GITHUB_SHA}" \
-            --arg source_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{
-              "data": {
-                "type": "workspace",
-                "attributes": {
-                  "name": $name,
-                  "source-name": "github-actions"
-                  "source-url": $source_url
-                }
-                "relationships": {
-                  "project": {
-                    "data": {
-                      "type": "projects",
-                      "id": "prj-3rGi6Mb5Pzm4UXf8"
-                    }
+          project_id="prj-3rGi6Mb5Pzm4UXf8"
+          workspace_name="${GITHUB_REPOSITORY#*/}-${GITHUB_SHA}"
+          source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          cat <<EOF >payload.json
+          {
+            "data": {
+              "type": "workspace",
+              "attributes": {
+                "name": "${workspace_name}",
+                "source-name": "GitHub Actions",
+                "source-url": "${source_url}"
+              },
+              "relationships": {
+                "project": {
+                  "data": {
+                    "type": "projects",
+                    "id": "${project_id}"
                   }
-
+                }
               }
-            }')"
+            }
+          }
+          EOF
 
-          CREATE_RESPONSE="$(curl \
-            --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" \
-            --header "Content-Type: application/vnd.api+json" \
-            --request POST \
-            --data "${PAYLOAD}" \
-            "${CREATE_URL}")"
+          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
+          set -- "$@" --request POST --data @payload.json
 
-          WORKSPACE_ID="$(echo "$CREATE_RESPONSE" | jq -r '.data.id')"
+          response="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces)"
+          workspace_id="$(printf '%s\n' "${response}" | jq -r '.data.id')"
 
-          echo "hcp_terraform_workspace_id=$WORKSPACE_ID" >> $GITHUB_OUTPUT
+          echo "hcp_terraform_workspace_id=${workspace_id}" >> "${GITHUB_OUTPUT}"
