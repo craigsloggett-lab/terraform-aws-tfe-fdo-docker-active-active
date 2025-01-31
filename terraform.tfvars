@@ -33,7 +33,7 @@ lb_name                   = "tfe-web-alb"
 lb_target_group_name      = "tfe-web-alb-tg"
 
 # RDS
-postgresql_version       = "17.2"
+postgresql_version       = "16.6"
 tfe_database_name        = "tfe"
 tfe_database_user        = "tfe"
 rds_instance_name        = "tfe-postgres-db"
