@@ -5,19 +5,21 @@ on: pull_request
 permissions:
   contents: read
 
+env:
+  TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
+
 jobs:
   create-workspace:
-    name: Create HCP Terraform Workspace
+    name: Create Workspace
     runs-on: ubuntu-24.04
     outputs:
       workspace-id: ${{ steps.create-workspace.outputs.workspace-id }}
+      workspace-name: ${{ steps.create-workspace.outputs.workspace-name }}
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Create HCP Terraform Workspace
+      - name: Create an HCP Terraform Workspace
         id: create-workspace
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
         run: |
           project_id="prj-3rGi6Mb5Pzm4UXf8"
           workspace_name="${GITHUB_REPOSITORY#*/}-$(git rev-parse --short HEAD)"
@@ -51,14 +53,58 @@ jobs:
           workspace_id="$(printf '%s\n' "${response}" | jq -r '.data.id')"
 
           echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
-  delete-workspace:
-    name: Delete Workspace
+          echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
+  deploy-configuration:
+    name: Deploy Configuration
     runs-on: ubuntu-24.04
     needs: create-workspace
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Delete HCP Terraform Workspace
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: 1.10.3
+      - name: Update backend.tf
+        run: |
+          workspace_name="${{ needs.create-workspace.outputs.workspace-id }}"
+
+          cat <<EOF >backend.tf
+          terraform {
+            cloud {
+                organization = "craigsloggett-lab"
+
+                workspaces {
+                  project = "Modules"
+                  name    = "${workspace_name}"
+                }
+              }
+            }
+          EOF
+      - name: Terraform Apply
+        run: |
+          terraform init
+          terraform apply -auto-approve
+  validate-configuration:
+    name: Validate Deployment
+    runs-on: ubuntu-24.04
+    needs: deploy-configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: Terraform Apply
+        run: |
+          echo "Validate"
+  delete-workspace:
+    name: Delete Workspace
+    runs-on: ubuntu-24.04
+    needs:
+      - create-workspace
+      - deploy-configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: Delete the HCP Terraform Workspace
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
         run: |
