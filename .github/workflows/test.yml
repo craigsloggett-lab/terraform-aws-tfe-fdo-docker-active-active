@@ -1,0 +1,55 @@
+name: Test
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-fmt:
+    name: Terraform
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: 1.10.3
+      - name: Create HCP Terraform Workspace
+        env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
+        run: |
+          CREATE_URL="https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces"
+          PAYLOAD="$(jq -n \
+            --arg name "${GITHUB_REPOSITORY#*/}-${GITHUB_SHA}" \
+            --arg source_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{
+              "data": {
+                "type": "workspace",
+                "attributes": {
+                  "name": $name,
+                  "source-name": "github-actions"
+                  "source-url": $source_url
+                }
+                "relationships": {
+                  "project": {
+                    "data": {
+                      "type": "projects",
+                      "id": "prj-3rGi6Mb5Pzm4UXf8"
+                    }
+                  }
+
+              }
+            }')"
+
+          CREATE_RESPONSE="$(curl \
+            --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" \
+            --header "Content-Type: application/vnd.api+json" \
+            --request POST \
+            --data "${PAYLOAD}" \
+            "${CREATE_URL}")"
+
+          WORKSPACE_ID="$(echo "$CREATE_RESPONSE" | jq -r '.data.id')"
+
+          echo "hcp_terraform_workspace_id=$WORKSPACE_ID" >> $GITHUB_OUTPUT
