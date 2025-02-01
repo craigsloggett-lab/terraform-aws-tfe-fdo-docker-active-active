@@ -32,7 +32,7 @@ jobs:
               "attributes": {
                 "name": "${workspace_name}",
                 "source-name": "GitHub Actions",
-                "source-url": "${source_url}"
+                "source-url": "${source_url}",
                 "terraform-version": "1.10.3"
               },
               "relationships": {
@@ -50,8 +50,7 @@ jobs:
           set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
           set -- "$@" --silent --request POST --data @payload.json
 
-          response="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces)"
-          workspace_id="$(printf '%s\n' "${response}" | jq -r '.data.id')"
+          workspace_id="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces | jq -r '.data.id')"
 
           echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
           echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
@@ -85,7 +84,8 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform init
-          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}"
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04
@@ -95,15 +95,48 @@ jobs:
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: Terraform Apply
         run: |
-          echo "Validate"
+          sleep 30
+  destroy-infrastructure:
+    name: Destroy Infrastructure
+    runs-on: ubuntu-24.04
+    if: ${{ always() }}
+    needs:
+      - create-workspace
+      - validate-deployment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: 1.10.3
+      - name: Update backend.tf
+        run: |
+          workspace_name="${{ needs.create-workspace.outputs.workspace-name }}"
+
+          cat <<EOF >backend.tf
+          terraform {
+            cloud {
+                organization = "craigsloggett-lab"
+
+                workspaces {
+                  project = "Modules"
+                  name    = "${workspace_name}"
+                }
+              }
+            }
+          EOF
+      - name: Terraform Destroy
+        run: |
+          terraform init
+          terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
   delete-workspace:
     name: Delete Workspace
     runs-on: ubuntu-24.04
     if: ${{ always() }}
     needs:
       - create-workspace
-      - deploy-configuration
-      - validate-deployment
+      - destroy-infrastructure
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
@@ -111,7 +144,8 @@ jobs:
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
         run: |
+          workspace_id="${{ needs.create-workspace.outputs.workspace-id }}"
           set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
           set -- "$@" --silent --request POST
 
-          curl "$@" "https://app.terraform.io/api/v2/workspaces/${{ needs.create-workspace.outputs.workspace-id }}/actions/safe-delete"
+          curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
