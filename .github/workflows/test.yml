@@ -121,4 +121,4 @@ jobs:
           set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
           set -- "$@" --silent --request POST
 
-          curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
+          #curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
