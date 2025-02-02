@@ -37,6 +37,7 @@ jobs:
                 "source-name": "GitHub Actions",
                 "source-url": "${source_url}",
                 "terraform-version": "1.10.3"
+                "auto-apply": "true"
               },
               "relationships": {
                 "project": {
