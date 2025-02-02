@@ -155,7 +155,7 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | <a name="input_tfe_license"></a> [tfe\_license](#input\_tfe\_license) | The license for Terraform Enterprise. | `string` | n/a | yes |
 | <a name="input_tfe_security_group_name"></a> [tfe\_security\_group\_name](#input\_tfe\_security\_group\_name) | The name of the Terraform Enterprise EC2 hosts security group. | `string` | `"tfe-sg"` | no |
 | <a name="input_tfe_subdomain"></a> [tfe\_subdomain](#input\_tfe\_subdomain) | The subdomain used for Terraform Enterprise. | `string` | `"tfe"` | no |
-| <a name="input_tfe_version"></a> [tfe\_version](#input\_tfe\_version) | The version of Terraform Enterprise to deploy. | `string` | `"v202501-1"` | no |
+| <a name="input_tfe_version"></a> [tfe\_version](#input\_tfe\_version) | The version of Terraform Enterprise to deploy. | `string` | n/a | yes |
 | <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | A list of availability zone names to deploy to in the region. | `list(string)` | <pre>[<br/>  "ca-central-1a",<br/>  "ca-central-1b",<br/>  "ca-central-1d"<br/>]</pre> | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC used to host Terraform Enterprise. | `string` | `"tfe-vpc"` | no |
 
