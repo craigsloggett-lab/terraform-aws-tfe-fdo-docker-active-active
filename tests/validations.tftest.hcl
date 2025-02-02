@@ -6,3 +6,5 @@ variables {
 run "validate_plan" {
   command = plan
 }
+
+run "validate_apply" {}
