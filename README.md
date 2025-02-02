@@ -2,8 +2,6 @@
 
 Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 
-TEST
-
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
