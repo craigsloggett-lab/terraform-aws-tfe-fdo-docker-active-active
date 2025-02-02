@@ -12,6 +12,9 @@ jobs:
   deploy-terraform-module:
     name: Deploy Terraform Module
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     outputs:
       workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
       workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
