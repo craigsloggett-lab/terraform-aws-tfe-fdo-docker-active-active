@@ -80,8 +80,7 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04
