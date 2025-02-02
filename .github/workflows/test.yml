@@ -36,8 +36,7 @@ jobs:
                 "name": "${workspace_name}",
                 "source-name": "GitHub Actions",
                 "source-url": "${source_url}",
-                "terraform-version": "1.10.3",
-                "auto-apply": "true"
+                "terraform-version": "1.10.3"
               },
               "relationships": {
                 "project": {
@@ -81,7 +80,8 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}"
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04

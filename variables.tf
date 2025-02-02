@@ -27,7 +27,7 @@ variable "ec2_bastion_ssh_public_key" {
 variable "vpc_name" {
   type        = string
   description = "The name of the VPC used to host Terraform Enterprise."
-  default     = "tfe-vpc-2"
+  default     = "tfe-vpc"
 }
 
 variable "vpc_azs" {
