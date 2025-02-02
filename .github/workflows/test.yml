@@ -9,116 +9,132 @@ env:
   TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
 
 jobs:
-  deploy-terraform-module:
-    name: Deploy Terraform Module
+  test-terraform-module:
+    name: Run Terraform Test
     runs-on: ubuntu-24.04
-    outputs:
-      workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
-      workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Create an HCP Terraform Workspace
-        id: create-hcp-terraform-workspace
-        run: |
-          project_id="prj-3rGi6Mb5Pzm4UXf8"
-          workspace_name="${GITHUB_REPOSITORY#*/}-$(git rev-parse --short HEAD)"
-          source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
-          cat <<EOF >payload.json
-          {
-            "data": {
-              "type": "workspace",
-              "attributes": {
-                "name": "${workspace_name}",
-                "source-name": "GitHub Actions",
-                "source-url": "${source_url}",
-                "terraform-version": "1.10.3"
-              },
-              "relationships": {
-                "project": {
-                  "data": {
-                    "type": "projects",
-                    "id": "${project_id}"
-                  }
-                }
-              }
-            }
-          }
-          EOF
-
-          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
-          set -- "$@" --silent --request POST --data @payload.json
-
-          workspace_id="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces | jq -r '.data.id')"
-
-          echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
-          echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Update the Terraform Block
+      - name: Clear the Terraform Block
         run: |
-          workspace_name="${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}"
-
-          cat <<EOF >backend.tf
-          terraform {
-            cloud {
-                organization = "craigsloggett-lab"
-
-                workspaces {
-                  project = "Modules"
-                  name    = "${workspace_name}"
-                }
-              }
-            }
-          EOF
-      - name: Start a Plan and Apply Run
+          : >backend.tf
+      - name: Run Terraform Tests in HCP Terraform
         run: |
           terraform init
-          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-  validate-deployment:
-    name: Validate Deployment
-    runs-on: ubuntu-24.04
-    if: ${{ always() }}
-    needs: deploy-terraform-module
-    steps:
-      - name: Checkout
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Validate TFE Endpoint
-        if: needs.deploy-terraform-module.result == 'success'
-        run: |
-          sleep 10
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
-        with:
-          terraform_version: 1.10.3
-      - name: Update the Terraform Block
-        run: |
-          workspace_name="${{ needs.deploy-terraform-module.outputs.workspace-name }}"
-
-          cat <<EOF >backend.tf
-          terraform {
-            cloud {
-                organization = "craigsloggett-lab"
-
-                workspaces {
-                  project = "Modules"
-                  name    = "${workspace_name}"
-                }
-              }
-            }
-          EOF
-      - name: Queue a Destroy Plan
-        run: |
-          terraform init
-          terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-      - name: Delete the HCP Terraform Workspace
-        run: |
-          workspace_id="${{ needs.deploy-terraform-module.outputs.workspace-id }}"
-          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
-          set -- "$@" --silent --request POST
-
-          #curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
+          terraform test -cloud-run=app.terraform.io/craigsloggett-lab/tfe-fdo-docker-active-active/aws -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+  #  deploy-terraform-module:
+  #    name: Deploy Terraform Module
+  #    runs-on: ubuntu-24.04
+  #    outputs:
+  #      workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
+  #      workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
+  #    steps:
+  #      - name: Checkout
+  #        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+  #      - name: Create an HCP Terraform Workspace
+  #        id: create-hcp-terraform-workspace
+  #        run: |
+  #          project_id="prj-3rGi6Mb5Pzm4UXf8"
+  #          workspace_name="${GITHUB_REPOSITORY#*/}-$(git rev-parse --short HEAD)"
+  #          source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+  #
+  #          cat <<EOF >payload.json
+  #          {
+  #            "data": {
+  #              "type": "workspace",
+  #              "attributes": {
+  #                "name": "${workspace_name}",
+  #                "source-name": "GitHub Actions",
+  #                "source-url": "${source_url}",
+  #                "terraform-version": "1.10.3"
+  #              },
+  #              "relationships": {
+  #                "project": {
+  #                  "data": {
+  #                    "type": "projects",
+  #                    "id": "${project_id}"
+  #                  }
+  #                }
+  #              }
+  #            }
+  #          }
+  #          EOF
+  #
+  #          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
+  #          set -- "$@" --silent --request POST --data @payload.json
+  #
+  #          workspace_id="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces | jq -r '.data.id')"
+  #
+  #          echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
+  #          echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
+  #      - name: Setup Terraform
+  #        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+  #        with:
+  #          terraform_version: 1.10.3
+  #      - name: Update the Terraform Block
+  #        run: |
+  #          workspace_name="${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}"
+  #
+  #          cat <<EOF >backend.tf
+  #          terraform {
+  #            cloud {
+  #                organization = "craigsloggett-lab"
+  #
+  #                workspaces {
+  #                  project = "Modules"
+  #                  name    = "${workspace_name}"
+  #                }
+  #              }
+  #            }
+  #          EOF
+  #      - name: Start a Plan and Apply Run
+  #        run: |
+  #          terraform init
+  #          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+  #  validate-deployment:
+  #    name: Validate Deployment
+  #    runs-on: ubuntu-24.04
+  #    if: ${{ always() }}
+  #    needs: deploy-terraform-module
+  #    steps:
+  #      - name: Checkout
+  #        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+  #      - name: Validate TFE Endpoint
+  #        if: needs.deploy-terraform-module.result == 'success'
+  #        run: |
+  #          sleep 10
+  #      - name: Set up Terraform
+  #        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+  #        with:
+  #          terraform_version: 1.10.3
+  #      - name: Update the Terraform Block
+  #        run: |
+  #          workspace_name="${{ needs.deploy-terraform-module.outputs.workspace-name }}"
+  #
+  #          cat <<EOF >backend.tf
+  #          terraform {
+  #            cloud {
+  #                organization = "craigsloggett-lab"
+  #
+  #                workspaces {
+  #                  project = "Modules"
+  #                  name    = "${workspace_name}"
+  #                }
+  #              }
+  #            }
+  #          EOF
+  #      - name: Queue a Destroy Plan
+  #        run: |
+  #          terraform init
+  #          terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+  #      - name: Delete the HCP Terraform Workspace
+  #        run: |
+  #          workspace_id="${{ needs.deploy-terraform-module.outputs.workspace-id }}"
+  #          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
+  #          set -- "$@" --silent --request POST
+  #
+  #          curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
