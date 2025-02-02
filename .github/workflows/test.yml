@@ -1,9 +1,6 @@
 name: Test
 
-on:
-  workflow_run:
-    workflows: [Lint]
-    types: [completed]
+on: pull_request
 
 permissions:
   contents: read
