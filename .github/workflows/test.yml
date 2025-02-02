@@ -25,7 +25,7 @@ jobs:
         id: create-hcp-terraform-workspace
         run: |
           project_id="prj-3rGi6Mb5Pzm4UXf8"
-          workspace_name="${GITHUB_REPOSITORY#*/}-${{ github.event.pull_request.head.sha }}"
+          workspace_name="${GITHUB_REPOSITORY#*/}-$(print '%s\n' "${{ github.event.pull_request.head.sha }}" | cut -c1-7)"
           source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
           cat <<EOF >payload.json
