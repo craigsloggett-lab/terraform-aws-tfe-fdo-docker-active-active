@@ -36,6 +36,8 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [aws_db_instance.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/db_instance) | resource |
 | [aws_db_parameter_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/db_parameter_group) | resource |
 | [aws_db_subnet_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/db_subnet_group) | resource |
+| [aws_ec2_instance_connect_endpoint.ec2](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/ec2_instance_connect_endpoint) | resource |
+| [aws_ec2_instance_connect_endpoint.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/ec2_instance_connect_endpoint) | resource |
 | [aws_elasticache_replication_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/elasticache_replication_group) | resource |
 | [aws_elasticache_subnet_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/elasticache_subnet_group) | resource |
 | [aws_iam_instance_profile.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/iam_instance_profile) | resource |
@@ -50,7 +52,6 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [aws_iam_role_policy_attachment.tfe_put_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_instance.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/instance) | resource |
 | [aws_key_pair.self](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/key_pair) | resource |
 | [aws_launch_template.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/launch_template) | resource |
 | [aws_lb.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/lb) | resource |
@@ -63,7 +64,7 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [aws_s3_bucket_server_side_encryption_configuration.tfe_sse](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.tfe_versioning](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/s3_bucket_versioning) | resource |
 | [aws_security_group.alb](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
-| [aws_security_group.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
+| [aws_security_group.ec2_instance_connect](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
 | [aws_security_group.elasticache](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
 | [aws_security_group.rds](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
 | [aws_security_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/security_group) | resource |
@@ -85,12 +86,12 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [aws_vpc_endpoint_route_table_association.private](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_endpoint_route_table_association) | resource |
 | [aws_vpc_endpoint_route_table_association.public](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_endpoint_route_table_association) | resource |
 | [aws_vpc_security_group_egress_rule.alb](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
-| [aws_vpc_security_group_egress_rule.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
+| [aws_vpc_security_group_egress_rule.ec2_instance_connect](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
 | [aws_vpc_security_group_egress_rule.elasticache](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
 | [aws_vpc_security_group_egress_rule.rds](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
 | [aws_vpc_security_group_egress_rule.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_egress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.alb](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
-| [aws_vpc_security_group_ingress_rule.bastion_ssh](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
+| [aws_vpc_security_group_ingress_rule.ec2_instance_connect](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.elasticache](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.rds](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.tfe_https](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/resources/vpc_security_group_ingress_rule) | resource |
@@ -102,7 +103,6 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [aws_ami.debian](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ami) | data source |
 | [aws_availability_zones.all](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/caller_identity) | data source |
-| [aws_ec2_instance_type_offering.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ec2_instance_type_offering) | data source |
 | [aws_ec2_instance_type_offering.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ec2_instance_type_offering) | data source |
 | [aws_iam_policy_document.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/iam_policy_document) | data source |
@@ -126,11 +126,10 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | The maximum number of hosts allowed in the TFE auto scaling group. | `number` | `2` | no |
 | <a name="input_asg_min_size"></a> [asg\_min\_size](#input\_asg\_min\_size) | The minimum number of hosts allowed in the TFE auto scaling group. | `number` | `0` | no |
 | <a name="input_asg_name"></a> [asg\_name](#input\_asg\_name) | The name of the ASG for the TFE hosts. | `string` | `"tfe-asg"` | no |
-| <a name="input_ec2_bastion_instance_name"></a> [ec2\_bastion\_instance\_name](#input\_ec2\_bastion\_instance\_name) | The name of the Bastion EC2 instance. | `string` | `"Bastion Host"` | no |
-| <a name="input_ec2_bastion_instance_type"></a> [ec2\_bastion\_instance\_type](#input\_ec2\_bastion\_instance\_type) | The type (size) of the Bastion EC2 instance. | `string` | `"t3.nano"` | no |
-| <a name="input_ec2_bastion_security_group_name"></a> [ec2\_bastion\_security\_group\_name](#input\_ec2\_bastion\_security\_group\_name) | The name of the EC2 Bastion Host security group. | `string` | `"ec2-bastion-sg"` | no |
-| <a name="input_ec2_bastion_ssh_public_key"></a> [ec2\_bastion\_ssh\_public\_key](#input\_ec2\_bastion\_ssh\_public\_key) | The SSH public key used to authenticate to the Bastion EC2 instance. | `string` | n/a | yes |
 | <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM role assigned to the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-iam-role"` | no |
+| <a name="input_ec2_instance_connect_endpoint_name"></a> [ec2\_instance\_connect\_endpoint\_name](#input\_ec2\_instance\_connect\_endpoint\_name) | The name of the S3 VPC endpoint. | `string` | `"tfe-vpce-s3"` | no |
+| <a name="input_ec2_instance_connect_security_group_name"></a> [ec2\_instance\_connect\_security\_group\_name](#input\_ec2\_instance\_connect\_security\_group\_name) | The name of the EC2 Instance Connect security group. | `string` | `"ec2-instance-connect-sg"` | no |
+| <a name="input_ec2_instance_connect_ssh_public_key"></a> [ec2\_instance\_connect\_ssh\_public\_key](#input\_ec2\_instance\_connect\_ssh\_public\_key) | The SSH public key used to authenticate to the EC2 instances over instance connect. | `string` | n/a | yes |
 | <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-instance-profile"` | no |
 | <a name="input_ec2_tfe_instance_name"></a> [ec2\_tfe\_instance\_name](#input\_ec2\_tfe\_instance\_name) | The name of the TFE EC2 instance. | `string` | `"TFE Host"` | no |
 | <a name="input_ec2_tfe_instance_type"></a> [ec2\_tfe\_instance\_type](#input\_ec2\_tfe\_instance\_type) | The type (size) of the TFE EC2 instance. | `string` | `"t3.medium"` | no |
@@ -163,6 +162,5 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_ec2_bastion_instance_type_availability"></a> [ec2\_bastion\_instance\_type\_availability](#output\_ec2\_bastion\_instance\_type\_availability) | Show the list of Availability Zones that the configured EC2 instance type is available in. |
 | <a name="output_ec2_tfe_instance_type_availability"></a> [ec2\_tfe\_instance\_type\_availability](#output\_ec2\_tfe\_instance\_type\_availability) | Show the list of Availability Zones that the configured EC2 instance type is available in. |
 <!-- END_TF_DOCS -->

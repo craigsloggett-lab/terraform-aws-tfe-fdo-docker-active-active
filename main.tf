@@ -8,22 +8,6 @@ data "aws_route53_zone" "tfe" {
 
 data "aws_availability_zones" "all" {}
 
-data "aws_ec2_instance_type_offering" "bastion" {
-  for_each = toset(data.aws_availability_zones.all.names)
-
-  filter {
-    name   = "instance-type"
-    values = [var.ec2_bastion_instance_type]
-  }
-
-  filter {
-    name   = "location"
-    values = [each.value]
-  }
-
-  location_type = "availability-zone"
-}
-
 data "aws_ec2_instance_type_offering" "tfe" {
   for_each = toset(data.aws_availability_zones.all.names)
 
