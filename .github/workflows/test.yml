@@ -9,17 +9,17 @@ env:
   TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
 
 jobs:
-  create-workspace:
-    name: Create Workspace
+  deploy-terraform-module:
+    name: Deploy Terraform Module
     runs-on: ubuntu-24.04
     outputs:
-      workspace-id: ${{ steps.create-workspace.outputs.workspace-id }}
-      workspace-name: ${{ steps.create-workspace.outputs.workspace-name }}
+      workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
+      workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: Create an HCP Terraform Workspace
-        id: create-workspace
+        id: create-hcp-terraform-workspace
         run: |
           project_id="prj-3rGi6Mb5Pzm4UXf8"
           workspace_name="${GITHUB_REPOSITORY#*/}-$(git rev-parse --short HEAD)"
@@ -54,20 +54,13 @@ jobs:
 
           echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
           echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
-  deploy-configuration:
-    name: Deploy Configuration
-    runs-on: ubuntu-24.04
-    needs: create-workspace
-    steps:
-      - name: Checkout
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Update backend.tf
+      - name: Update the Terraform Block
         run: |
-          workspace_name="${{ needs.create-workspace.outputs.workspace-name }}"
+          workspace_name="${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}"
 
           cat <<EOF >backend.tf
           terraform {
@@ -81,7 +74,7 @@ jobs:
               }
             }
           EOF
-      - name: Terraform Apply
+      - name: Start a Plan and Apply Run
         run: |
           terraform init
           #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
@@ -89,29 +82,20 @@ jobs:
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04
-    needs: deploy-configuration
+    needs: deploy-terraform-module
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Terraform Apply
+      - name: Validate TFE Endpoint
         run: |
-          sleep 30
-  destroy-infrastructure:
-    name: Destroy Infrastructure
-    runs-on: ubuntu-24.04
-    needs:
-      - create-workspace
-      - validate-deployment
-    steps:
-      - name: Checkout
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
-      - name: Setup Terraform
+          sleep 10
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Update backend.tf
+      - name: Update the Terraform Block
         run: |
-          workspace_name="${{ needs.create-workspace.outputs.workspace-name }}"
+          workspace_name="${{ needs.deploy-terraform-module.outputs.workspace-name }}"
 
           cat <<EOF >backend.tf
           terraform {
@@ -125,25 +109,13 @@ jobs:
               }
             }
           EOF
-      - name: Terraform Destroy
+      - name: Queue a Destroy Plan
         run: |
           terraform init
           terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-  delete-workspace:
-    name: Delete Workspace
-    runs-on: ubuntu-24.04
-    if: ${{ always() }}
-    needs:
-      - create-workspace
-      - destroy-infrastructure
-    steps:
-      - name: Checkout
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: Delete the HCP Terraform Workspace
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
         run: |
-          workspace_id="${{ needs.create-workspace.outputs.workspace-id }}"
+          workspace_id="${{ needs.deploy-terraform-module.outputs.workspace-id }}"
           set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
           set -- "$@" --silent --request POST
 
