@@ -41,8 +41,8 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
-          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform apply -auto-approve -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          #terraform plan -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
       - name: Cancel Outdated Terraform Run
         if: cancelled()
         id: cancel-terraform-run
