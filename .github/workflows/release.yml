@@ -47,4 +47,4 @@ jobs:
           VERSION: ${{ needs.release.outputs.new_release_version }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
-          .github/scripts/create_a_module_versions.sh
+          .github/scripts/create_a_module_version.sh
