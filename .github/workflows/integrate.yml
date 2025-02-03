@@ -42,8 +42,7 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          terraform apply -auto-approve -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
-          #terraform plan -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform plan -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
       - name: Cancel Outdated Terraform Run
         if: cancelled()
         id: cancel-terraform-run
@@ -75,9 +74,8 @@ jobs:
           WORKSPACE_ID: ${{ needs.deploy-terraform-module.outputs.workspace-id }}
           TFE_LICENSE: ${{ secrets.TFE_LICENSE }}
         run: |
-          #terraform init
-          #terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-          .github/scripts/create_a_destroy_run.sh
+          terraform init
+          terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
       - name: Delete the HCP Terraform Workspace
         env:
           WORKSPACE_ID: ${{ needs.deploy-terraform-module.outputs.workspace-id }}
