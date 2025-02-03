@@ -27,9 +27,6 @@ jobs:
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           .github/scripts/create_a_workspace.sh
-          # Set job output variables to be reused.
-          echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
-          echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
