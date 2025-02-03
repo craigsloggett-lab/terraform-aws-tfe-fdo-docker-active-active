@@ -43,8 +43,7 @@ jobs:
           LOG_FILE: log.txt
         run: |
           terraform init
-          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
-          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
           .github/scripts/get_run_id.sh
   validate-deployment:
     name: Validate Deployment
