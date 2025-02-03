@@ -41,16 +41,12 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
       - name: Cancel Outdated Terraform Run
         if: cancelled()
         id: cancel-terraform-run
         run: |
-          cat "${LOG_FILE}"
-          run_line=$(grep '/runs/run-' "${LOG_FILE}" | head -n 1)
-          run_id=${run_line##*/runs/}
-          echo "${run_id}"
-          curl --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json" --request POST "https://app.terraform.io/api/v2/runs/${run_id}/actions/cancel"
           .github/scripts/cancel_a_run.sh
   validate-deployment:
     name: Validate Deployment
