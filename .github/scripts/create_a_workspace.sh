@@ -25,7 +25,8 @@ cat <<EOF >payload.json
       "name": "${workspace_name}",
       "source-name": "GitHub Actions",
       "source-url": "${source_url}",
-      "terraform-version": "${terraform_version}"
+      "terraform-version": "${terraform_version}",
+      "auto-apply": "true"
     },
     "relationships": {
       "project": {
