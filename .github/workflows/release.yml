@@ -47,19 +47,4 @@ jobs:
           version="${{ needs.release.outputs.new_release_version }}"
           commit_sha="$(git rev-parse HEAD)"
 
-          cat <<EOF >payload.json
-          {
-            "data": {
-              "type": "registry-module-versions",
-              "attributes": {
-                "version": "${version}",
-                "commit-sha": "${commit_sha}"
-              }
-            }
-          }
-          EOF
-
-          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
-          set -- "$@" --silent --request POST --data @payload.json
-
-          curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/registry-modules/private/craigsloggett-lab/tfe-fdo-docker-active-active/aws/versions
+          .github/scripts/create_a_module_versions.sh "${version}" "${commit_sha}"
