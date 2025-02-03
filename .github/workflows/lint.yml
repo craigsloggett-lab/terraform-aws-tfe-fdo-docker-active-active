@@ -75,3 +75,13 @@ jobs:
         uses: terraform-docs/gh-actions@aeae0038ed47a547e0c0fca5c059d3335f48fb25 # v1.3.0
         with:
           fail-on-diff: true
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: ShellCheck
+        run: |
+          # shellcheck disable=SC2038
+          find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/bin/sh' {} + | xargs shellcheck
