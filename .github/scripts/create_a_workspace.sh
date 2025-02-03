@@ -6,6 +6,10 @@ set -ef
 # Required environment variables.
 commit_sha="${COMMIT_SHA:?Please set the COMMIT_SHA environment variable and run the script again.}"
 
+# Script output variables.
+export workspace_id=""
+export workspace_name=""
+
 # Trim the commit SHA to look like the commits shown in a PR conversation.
 short_commit_sha=$(printf '%s\n' "${commit_sha}" | cut -c1-7)
 # Derive values from the GitHub workflow environment variables.
@@ -44,5 +48,4 @@ api_endpoint="https://app.terraform.io/api/v2/organizations/${org}/workspaces"
 # shellcheck disable=SC2154
 set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
 set -- "$@" --silent --request POST --data @payload.json
-# shellcheck disable=SC2034
 workspace_id="$(curl "$@" "${api_endpoint}" | jq -r '.data.id')"
