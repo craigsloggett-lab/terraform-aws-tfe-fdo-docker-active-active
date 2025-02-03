@@ -5,6 +5,10 @@ on: pull_request
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
 
@@ -12,9 +16,6 @@ jobs:
   deploy-terraform-module:
     name: Deploy Terraform Module
     runs-on: ubuntu-24.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
     outputs:
       workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
       workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
@@ -41,13 +42,14 @@ jobs:
       - name: Start a Plan and Apply Run
         run: |
           terraform init
-          #terraform apply -auto-approve -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
-          terraform plan -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform apply -auto-approve -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          #terraform plan -no-color -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
       - name: Cancel Outdated Terraform Run
         if: cancelled()
         id: cancel-terraform-run
         run: |
           .github/scripts/cancel_a_run.sh
+          sleep 600
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04
