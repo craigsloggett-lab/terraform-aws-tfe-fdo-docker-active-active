@@ -83,9 +83,6 @@ jobs:
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: ShellCheck
         run: |
+          # Only #!/bin/sh scripts exist currently, add more if needed.
           # shellcheck disable=SC2038
           find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/bin/sh' {} + | xargs shellcheck
-          # shellcheck disable=SC2038
-          find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/bin/bash' {} + | xargs shellcheck
-          # shellcheck disable=SC2038
-          find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/usr/bin/env bash' {} + | xargs shellcheck
