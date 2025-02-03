@@ -49,7 +49,6 @@ jobs:
         id: cancel-terraform-run
         run: |
           .github/scripts/cancel_a_run.sh
-          sleep 600
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04

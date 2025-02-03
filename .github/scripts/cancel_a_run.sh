@@ -23,14 +23,23 @@ cat <<EOF >payload.json
 EOF
 
 api_endpoint="https://app.terraform.io/api/v2/runs/${run_id}"
+
 # shellcheck disable=SC2154
 set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
 set -- "$@" --silent --request POST --data @payload.json
 curl "$@" "${api_endpoint}/actions/cancel" | jq
 
-for i in 1 2 3 4 5; do
+get_run_status() {
   set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
+  set -- "$@" --silent --request GET
   curl "$@" "${api_endpoint}" | jq -r '.data.attributes.status'
-  sleep 30
-  printf '%s\n' "$i"
+}
+
+run_status="$(get_run_status)"
+printf '%s\n' "Run Status: ${run_status}"
+
+while [ "${run_status}" != 'canceled' ]; do
+  sleep 10
+  run_status="$(get_run_status)"
+  printf '%s\n' "Run Status: ${run_status}"
 done
