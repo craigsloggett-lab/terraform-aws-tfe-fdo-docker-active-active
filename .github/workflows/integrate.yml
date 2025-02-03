@@ -120,9 +120,7 @@ jobs:
           terraform init
           terraform destroy -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
       - name: Delete the HCP Terraform Workspace
+        env:
+          WORKSPACE_ID: ${{ needs.deploy-terraform-module.outputs.workspace-id }}
         run: |
-          workspace_id="${{ needs.deploy-terraform-module.outputs.workspace-id }}"
-          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
-          set -- "$@" --silent --request POST
-
-          curl "$@" "https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions/safe-delete"
+          .github/scripts/safe_delete_a_workspace.sh
