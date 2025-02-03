@@ -23,61 +23,22 @@ jobs:
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - name: Create an HCP Terraform Workspace
         id: create-hcp-terraform-workspace
+        env:
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          project_id="prj-3rGi6Mb5Pzm4UXf8"
-          commit_sha="$(printf '%s\n' "${{ github.event.pull_request.head.sha }}" | cut -c1-7)"
-          workspace_name="${GITHUB_REPOSITORY#*/}-${commit_sha}"
-          source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
-          cat <<EOF >payload.json
-          {
-            "data": {
-              "type": "workspace",
-              "attributes": {
-                "name": "${workspace_name}",
-                "source-name": "GitHub Actions",
-                "source-url": "${source_url}",
-                "terraform-version": "1.10.3"
-              },
-              "relationships": {
-                "project": {
-                  "data": {
-                    "type": "projects",
-                    "id": "${project_id}"
-                  }
-                }
-              }
-            }
-          }
-          EOF
-
-          set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
-          set -- "$@" --silent --request POST --data @payload.json
-
-          workspace_id="$(curl "$@" https://app.terraform.io/api/v2/organizations/craigsloggett-lab/workspaces | jq -r '.data.id')"
-
+          .github/scripts/create_a_workspace.sh
+          # Set job output variables to be reused.
           echo "workspace-id=${workspace_id}" >> "${GITHUB_OUTPUT}"
           echo "workspace-name=${workspace_name}" >> "${GITHUB_OUTPUT}"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Update the Terraform Block
+      - name: Generate a Terraform Cloud Block
+        env:
+          WORKSPACE_NAME: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
         run: |
-          workspace_name="${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}"
-
-          cat <<EOF >backend.tf
-          terraform {
-            cloud {
-                organization = "craigsloggett-lab"
-
-                workspaces {
-                  project = "Modules"
-                  name    = "${workspace_name}"
-                }
-              }
-            }
-          EOF
+          .github/scripts/generate_terraform_cloud_block.sh
       - name: Start a Plan and Apply Run
         run: |
           terraform init
@@ -99,22 +60,11 @@ jobs:
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Update the Terraform Block
+      - name: Generate a Terraform Cloud Block
+        env:
+          WORKSPACE_NAME: ${{ needs.deploy-terraform-module.outputs.workspace-name }}
         run: |
-          workspace_name="${{ needs.deploy-terraform-module.outputs.workspace-name }}"
-
-          cat <<EOF >backend.tf
-          terraform {
-            cloud {
-                organization = "craigsloggett-lab"
-
-                workspaces {
-                  project = "Modules"
-                  name    = "${workspace_name}"
-                }
-              }
-            }
-          EOF
+          .github/scripts/generate_terraform_cloud_block.sh
       - name: Queue a Destroy Plan
         run: |
           terraform init
