@@ -18,6 +18,7 @@ jobs:
     outputs:
       workspace-id: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-id }}
       workspace-name: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
+      run-id: ${{ steps.start-terraform-run.outputs.run-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
@@ -37,10 +38,14 @@ jobs:
         run: |
           .github/scripts/generate_terraform_cloud_block.sh
       - name: Start a Plan and Apply Run
+        id: start-terraform-run
+        env:
+          LOG_FILE: log.txt
         run: |
           terraform init
-          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}"
-          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}"
+          #terraform apply -auto-approve -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          terraform plan -var "tfe_license=${{ secrets.TFE_LICENSE }}" | tee "${LOG_FILE}"
+          .github/scripts/get_run_id.sh
   validate-deployment:
     name: Validate Deployment
     runs-on: ubuntu-24.04
@@ -49,6 +54,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      - name: Cancel Cancelled Terraform Run
+        if: needs.deploy-terraform-module.result == 'cancelled'
+        env:
+          RUN_ID: ${{ needs.deploy-terraform-module.outputs.run-id }}
+        run: |
+          .github/scripts/cancel_a_run.sh
       - name: Validate TFE Endpoint
         if: needs.deploy-terraform-module.result == 'success'
         run: |
