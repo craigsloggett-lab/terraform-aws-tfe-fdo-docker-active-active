@@ -1,9 +1,11 @@
 #!/bin/sh
 
-set -e
+# Globally disable globbing and enable exit-on-error.
+set -ef
 
-version="${1}"
-commit_sha="${2}"
+# Required environment variables.
+version="${VERSION:?Please set the VERSION environment variable and run the script again.}"
+commit_sha="${COMMIT_SHA:?Please set the COMMIT_SHA environment variable and run the script again.}"
 
 cat <<EOF >payload.json
 {
