@@ -85,3 +85,7 @@ jobs:
         run: |
           # shellcheck disable=SC2038
           find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/bin/sh' {} + | xargs shellcheck
+          # shellcheck disable=SC2038
+          find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/bin/bash' {} + | xargs shellcheck
+          # shellcheck disable=SC2038
+          find . -type d -name .git -prune -o -type f -exec grep -l '^#![[:blank:]]*/usr/bin/env bash' {} + | xargs shellcheck
