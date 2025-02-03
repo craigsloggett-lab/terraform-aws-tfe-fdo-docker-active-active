@@ -10,4 +10,4 @@ api_endpoint="https://app.terraform.io/api/v2/workspaces/${workspace_id}/actions
 # shellcheck disable=SC2154
 set -- --header "Authorization: Bearer ${TF_TOKEN_app_terraform_io}" --header "Content-Type: application/vnd.api+json"
 set -- "$@" --silent --request POST
-curl "$@" "${api_endpoint}"
+curl "$@" "${api_endpoint}" | jq
