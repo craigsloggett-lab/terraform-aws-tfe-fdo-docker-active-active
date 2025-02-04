@@ -147,8 +147,8 @@ resource "aws_vpc_security_group_ingress_rule" "alb" {
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
-  from_port   = 3389
-  to_port     = 3389
+  from_port   = 443
+  to_port     = 443
 }
 
 resource "aws_vpc_security_group_egress_rule" "alb" {
