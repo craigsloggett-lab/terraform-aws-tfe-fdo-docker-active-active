@@ -69,10 +69,15 @@ jobs:
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: 1.10.3
-      - name: Generate a Terraform Cloud Block
+      - name: Generate Terraform Configuration
         env:
           WORKSPACE_NAME: ${{ needs.deploy-terraform-module.outputs.workspace-name }}
+          TFE_VERSION: ${{ env.TFE_VERSION }}
+          ROUTE53_ZONE_NAME: ${{ env.ROUTE53_ZONE_NAME }}
+          EC2_BASTION_SSH_PUBLIC_KEY: ${{ env.EC2_BASTION_SSH_PUBLIC_KEY }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          .github/scripts/generate_tfvars.sh
           .github/scripts/generate_terraform_cloud_block.sh
       - name: Queue a Destroy Plan
         env:
