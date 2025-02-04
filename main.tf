@@ -55,7 +55,7 @@ locals {
   route53_alias_record_name = "${var.tfe_subdomain}.${var.route53_zone_name}"
 }
 
-resource "random_string" "tfe_encryption_password" {
+resource "random_string" "tfe-encryption-password" {
   length = 256
 }
 
