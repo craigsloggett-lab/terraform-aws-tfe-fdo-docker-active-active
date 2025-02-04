@@ -5,12 +5,14 @@ set -ef
 
 # Required environment variables.
 commit_sha="${COMMIT_SHA:?Please set the COMMIT_SHA environment variable and run the script again.}"
-route53_zone_name="${ROUTE53_ZONE_NAME:?Please set the ROUTE53_ZONE_NAME environment variable and run the script again.}"
-tfe_version="${TFE_VERSION:?Please set the TFE_VERSION environment variable and run the script again.}"
-ec2_bastion_ssh_public_key="${EC2_BASTION_SSH_PUBLIC_KEY:?Please set the EC2_BASTION_SSH_PUBLIC_KEY environment variable and run the script again.}"
 
 # Trim the commit SHA to look like the commits shown in a PR conversation.
 short_commit_sha=$(printf '%s\n' "${commit_sha}" | cut -c1-7)
+
+# TODO: Get these from the Terraform configuration.
+route53_zone_name="craig-sloggett.sbx.hashidemos.io"
+tfe_version="v202501-1"
+ec2_bastion_ssh_public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDEYtDnLmY9nus0dhQm1GlIVSQB7BswxGYnugA8Ag9JA"
 
 cat <<EOF >terraform.tfvars
 tfe_version                = "${tfe_version}"
