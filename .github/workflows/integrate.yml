@@ -11,6 +11,9 @@ concurrency:
 
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
+  TFE_VERSION: ${{ vars.TFE_VERSION }}
+  ROUTE53_ZONE_NAME: ${{ vars.ROUTE53_ZONE_NAME }}
+  EC2_BASTION_SSH_PUBLIC_KEY: ${{ vars.EC2_BASTION_SSH_PUBLIC_KEY }}
 
 jobs:
   deploy-terraform-module:
@@ -37,9 +40,6 @@ jobs:
       - name: Generate Terraform Configuration
         env:
           WORKSPACE_NAME: ${{ steps.create-hcp-terraform-workspace.outputs.workspace-name }}
-          TFE_VERSION: ${{ vars.TFE_VERSION }}
-          ROUTE53_ZONE_NAME: ${{ vars.ROUTE53_ZONE_NAME }}
-          EC2_BASTION_SSH_PUBLIC_KEY: ${{ vars.EC2_BASTION_SSH_PUBLIC_KEY }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           .github/scripts/generate_tfvars.sh
@@ -72,9 +72,6 @@ jobs:
       - name: Generate Terraform Configuration
         env:
           WORKSPACE_NAME: ${{ needs.deploy-terraform-module.outputs.workspace-name }}
-          TFE_VERSION: ${{ vars.TFE_VERSION }}
-          ROUTE53_ZONE_NAME: ${{ vars.ROUTE53_ZONE_NAME }}
-          EC2_BASTION_SSH_PUBLIC_KEY: ${{ vars.EC2_BASTION_SSH_PUBLIC_KEY }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           .github/scripts/generate_tfvars.sh
