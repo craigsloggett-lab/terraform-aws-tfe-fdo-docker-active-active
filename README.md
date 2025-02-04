@@ -100,10 +100,7 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 | [random_string.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/random/3.6.3/docs/resources/string) | resource |
 | [random_string.tfe_redis_password](https://registry.terraform.io/providers/hashicorp/random/3.6.3/docs/resources/string) | resource |
 | [aws_ami.debian](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ami) | data source |
-| [aws_availability_zones.all](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/caller_identity) | data source |
-| [aws_ec2_instance_type_offering.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ec2_instance_type_offering) | data source |
-| [aws_ec2_instance_type_offering.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/ec2_instance_type_offering) | data source |
 | [aws_iam_policy_document.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_get_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.84.0/docs/data-sources/iam_policy_document) | data source |
@@ -161,8 +158,5 @@ Deploy Terraform Enterprise on Docker in active-active mode to AWS.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_ec2_bastion_instance_type_availability"></a> [ec2\_bastion\_instance\_type\_availability](#output\_ec2\_bastion\_instance\_type\_availability) | Show the list of Availability Zones that the configured EC2 instance type is available in. |
-| <a name="output_ec2_tfe_instance_type_availability"></a> [ec2\_tfe\_instance\_type\_availability](#output\_ec2\_tfe\_instance\_type\_availability) | Show the list of Availability Zones that the configured EC2 instance type is available in. |
+No outputs.
 <!-- END_TF_DOCS -->
