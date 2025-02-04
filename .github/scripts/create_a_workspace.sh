@@ -12,7 +12,7 @@ short_commit_sha=$(printf '%s\n' "${commit_sha}" | cut -c1-7)
 workspace_name="${GITHUB_REPOSITORY#*/}-${short_commit_sha}"
 source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-# TODO: Get this from the Terraform configuration.
+# TODO: Get these from the Terraform configuration.
 project_id="prj-3rGi6Mb5Pzm4UXf8"
 terraform_version="1.10.3"
 org="craigsloggett-lab"

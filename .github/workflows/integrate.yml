@@ -11,9 +11,6 @@ concurrency:
 
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.HCP_TERRAFORM_ADMIN_TEAM_TOKEN }}
-  TFE_VERSION: ${{ vars.TFE_VERSION }}
-  ROUTE53_ZONE_NAME: ${{ vars.ROUTE53_ZONE_NAME }}
-  EC2_BASTION_SSH_PUBLIC_KEY: ${{ vars.EC2_BASTION_SSH_PUBLIC_KEY }}
 
 jobs:
   deploy-terraform-module:
