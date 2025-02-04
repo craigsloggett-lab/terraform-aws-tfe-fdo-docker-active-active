@@ -146,9 +146,9 @@ resource "aws_vpc_security_group_ingress_rule" "alb" {
   description       = "Allow HTTPS traffic ingress to the application load balancer from all networks."
 
   cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "tcp"
-  from_port   = 443
-  to_port     = 443
+  ip_protocol = "-1"
+  #from_port   = 443
+  #to_port     = 443
 }
 
 resource "aws_vpc_security_group_egress_rule" "alb" {
