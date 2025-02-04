@@ -32,7 +32,7 @@ resource "aws_ssm_parameter" "tfe_encryption_password" {
   description = "Terraform Enterprise Encryption Password"
   type        = "SecureString"
   key_id      = data.aws_kms_key.ssm.id
-  value       = random_string.tfe_encryption_password.result
+  value       = random_string.tfe-encryption-password.result
 }
 
 resource "aws_ssm_parameter" "tfe_hostname" {
