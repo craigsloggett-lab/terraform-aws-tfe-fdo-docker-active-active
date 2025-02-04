@@ -218,3 +218,25 @@ resource "aws_vpc_security_group_egress_rule" "elasticache" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
+
+# Additional resources for demo.
+
+resource "aws_security_group" "demo" {
+  name        = var.demo_security_group_name
+  description = "Demo Security Group"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = var.demo_security_group_name
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "demo-ssh" {
+  security_group_id = aws_security_group.demo.id
+  description       = "Allow SSH traffic ingress to the demo resources."
+
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "tcp"
+  from_port   = 22
+  to_port     = 22
+}

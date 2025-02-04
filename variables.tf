@@ -72,6 +72,12 @@ variable "elasticache_security_group_name" {
   default     = "elasticache-sg"
 }
 
+variable "demo_security_group_name" {
+  type        = string
+  description = "The name of the security group used for a demo."
+  default     = "demo-sg"
+}
+
 # EC2
 
 variable "ec2_bastion_instance_name" {
